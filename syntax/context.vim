@@ -2,7 +2,7 @@
 " Language:           ConTeXt typesetting engine
 " Maintainer:         Nicola Vitacolonna <nvitacolonna@gmail.com>
 " Former Maintainers: Nikolai Weibull <now@bitwi.se>
-" Latest Revision:    2016 Oct 16
+" Latest Revision:    2016 Nov 1
 
 if exists("b:current_syntax")
   finish
@@ -26,7 +26,7 @@ if type(s:context_include) ==# type([])
         \ )
 endif
 
-syn iskeyword @,48-57,a-z,A-Z,192-255
+syn iskeyword @,48-57,_,!,?,a-z,A-Z,192-255
 
 syn spell   toplevel
 
@@ -53,6 +53,11 @@ syn region  contextEscaped    matchgroup=contextPreProc start='\\Typed\h\+\%(\s\
 
 syn match   contextBuiltin    display contains=@NoSpell
       \ '\\\%(unprotect\|protect\|unexpanded\)\>'
+
+" \unprotect... \protect regions
+syn region contextUnprotect matchgroup=contextBuiltin start='\\unprotect' end='\\protect' contains=ALLBUT,contextBeginEndLua
+
+syn match   contextSequence '\\[a-zA-Z]*[@_!?]\+[a-zA-Z@_!?]*' contains=@NoSpell contained containedin=contextUnprotect
 
 syn match   contextPreProc    '^\s*\\\%(start\|stop\)\=\%(component\|environment\|project\|product\)\>'
                               \ contains=@NoSpell
@@ -125,6 +130,7 @@ hi def link contextOptions    Typedef
 hi def link contextComment    Comment
 hi def link contextBlockDelim Keyword
 hi def link contextBuiltin    Keyword
+hi def link contextSequence   contextBuiltin
 hi def link contextDelimiter  Delimiter
 hi def link contextEscaped    String
 hi def link contextPreProc    PreProc
